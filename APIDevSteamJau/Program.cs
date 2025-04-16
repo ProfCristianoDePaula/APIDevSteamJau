@@ -1,4 +1,5 @@
 using APIDevSteamJau.Data;
+using APIDevSteamJau.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
@@ -22,7 +23,7 @@ builder.Services.AddCors(options =>
 
 // Adicionar o serviço de autenticação
 // Serviço de EndPoints do Identity Framework
-builder.Services.AddIdentityApiEndpoints<IdentityUser>(options =>
+builder.Services.AddIdentityApiEndpoints<Usuario>(options =>
 {
     options.SignIn.RequireConfirmedEmail = false; // Exige confirmação de email
     options.SignIn.RequireConfirmedAccount = false; // Exige confirmação de conta
@@ -33,6 +34,7 @@ builder.Services.AddIdentityApiEndpoints<IdentityUser>(options =>
     options.Password.RequireDigit = false; // Exige dígitos numéricos
     options.Password.RequiredLength = 4; // Exige comprimento mínimo da senha
 })
+
 .AddRoles<IdentityRole>() // Adicionando o serviço de roles
 .AddEntityFrameworkStores<APIContext>() // Adicionando o serviço de EntityFramework
 .AddDefaultTokenProviders(); // Adiocionando o provedor de tokens padrão
@@ -90,6 +92,6 @@ app.UseAuthorization(); // Habilita a autorização
 
 app.MapControllers(); // Mapeia os controladores
 
-app.MapGroup("/Usuario").MapIdentityApi<IdentityUser>(); // Mapeia o grupo de endpoints de autenticação
+app.MapGroup("/Usuario").MapIdentityApi<Usuario>(); // Mapeia o grupo de endpoints de autenticação
 
 app.Run(); // Executa o aplicativo
