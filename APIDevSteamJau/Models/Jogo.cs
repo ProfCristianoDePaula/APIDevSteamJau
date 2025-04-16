@@ -6,7 +6,7 @@
         public string Titulo { get; set; }
         public decimal Preco { get; set; }
         public int Desconto { get; set; }
-        public string Banner { get; set; }
+        public string? Banner { get; set; }
         public string Descricao { get; set; }
     }
 }
