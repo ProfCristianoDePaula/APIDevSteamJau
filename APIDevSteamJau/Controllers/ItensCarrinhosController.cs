@@ -114,6 +114,22 @@ namespace APIDevSteamJau.Controllers
                 return NotFound();
             }
 
+            // Verificar se o Carrinho existe
+            var carrinho = await _context.Carrinhos.FindAsync(itemCarrinho.CarrinhoId);
+            if (carrinho == null)
+            {
+                return NotFound("Carrinho não encontrado.");
+            }
+
+            // Remove o valor total do carrinho
+            carrinho.ValorTotal -= itemCarrinho.ValorTotal;
+
+            // Verifica se o valor total do carrinho é menor que zero
+            if (carrinho.ValorTotal < 0)
+            {
+                carrinho.ValorTotal = 0;
+            }
+
             _context.ItensCarrinhos.Remove(itemCarrinho);
             await _context.SaveChangesAsync();
 
