@@ -25,6 +25,7 @@
 
   <ItemGroup>
     <Folder Include="Resources\Games\" />
+    <Folder Include="Resources\Medias\" />
     <Folder Include="Resources\Profile\" />
   </ItemGroup>
 
