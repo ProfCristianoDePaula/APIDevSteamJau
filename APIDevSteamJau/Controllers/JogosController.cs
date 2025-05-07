@@ -333,5 +333,22 @@ namespace APIDevSteamJau.Controllers
             return Ok(jogosPorCategoria);
         }
 
+        // [HttpGet] : Listar Jogos por Nome
+        [HttpGet("ListarJogosPorNome")]
+        public async Task<IActionResult> ListarJogosPorNome(string nome)
+        {
+            // Busca os jogos com o nome fornecido
+            var jogosPorNome = await _context.Jogos
+                .Where(j => j.Titulo.Contains(nome, StringComparison.OrdinalIgnoreCase))
+                .ToListAsync();
+
+            // Verifica se existem jogos com o nome fornecido
+            if (jogosPorNome == null || jogosPorNome.Count == 0)
+                return NotFound("Nenhum jogo encontrado com este nome.");
+
+            // Retorna a lista de jogos encontrados
+            return Ok(jogosPorNome);
+        }
+
     }
 }
