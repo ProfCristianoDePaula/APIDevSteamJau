@@ -249,7 +249,7 @@ namespace APIDevSteamJau.Controllers
 
         // [HttpGet] Busca o Usuario por Id
         [HttpGet("GetUserById")]
-        public async Task<IActionResult> GetUserById(string userId)
+        public async Task<IActionResult> GetUseryId(string userId)
         {
             // Buscando o usuario no banco de dados
             var user = await _userManager.FindByIdAsync(userId);
