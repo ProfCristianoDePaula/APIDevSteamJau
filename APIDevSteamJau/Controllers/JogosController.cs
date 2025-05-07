@@ -283,5 +283,55 @@ namespace APIDevSteamJau.Controllers
             return Ok(jogosComDesconto);
         }
 
+        // [HttpGet] : Listar Jogos em Lançamento
+        [HttpGet("ListarJogosEmLancamento")]
+        public async Task<IActionResult> ListarJogosEmLancamento()
+        {
+            // Busca os jogos em lançamento
+            var jogosEmLancamento = await _context.Jogos
+                .Where(j => j.Lancamento == true)
+                .ToListAsync();
+            // Verifica se existem jogos em lançamento
+            if (jogosEmLancamento == null || jogosEmLancamento.Count == 0)
+                // Se não houver jogos em lançamento
+                return NotFound("Nenhum jogo encontrado em lançamento.");
+            // Retorna a lista de jogos em lançamento
+            return Ok(jogosEmLancamento);
+        }
+
+        // [HttpGet] : Listar Jogos por Categoria
+        [HttpGet("ListarJogosPorCategoria")]
+        public async Task<IActionResult> ListarJogosPorCategoria(string categoria)
+        {
+            // Buscar a categoria no banco de dados
+            var categoriaExistente = await _context.Categorias
+                .FirstOrDefaultAsync(c => c.Nome.Contains(categoria, StringComparison.OrdinalIgnoreCase));
+
+            // Verifica se a categoria existe
+            if (categoriaExistente == null)
+                return NotFound("Categoria não encontrada.");
+
+            // Busca os jogos associados à categoria
+            var jogosIdPorCategoria = await _context.JogosCategorias
+                .Where(jc => jc.CategoriaId == categoriaExistente.CategoriaId)
+                .ToListAsync();
+
+            // Verifica se existem jogos associados à categoria
+            if (jogosIdPorCategoria == null || jogosIdPorCategoria.Count == 0)
+                return NotFound("Nenhum jogo encontrado para esta categoria.");
+
+            // Busca os jogos com os IDs encontrados
+            var jogosPorCategoria = await _context.Jogos
+                .Where(j => jogosIdPorCategoria.Any(jc => jc.JogoId == j.JogoId))
+                .ToListAsync();
+
+            // Verifica se existem jogos associados à categoria
+            if (jogosPorCategoria == null || jogosPorCategoria.Count == 0)
+                return NotFound("Nenhum jogo encontrado para esta categoria.");
+
+            // Retorna a lista de jogos associados à categoria
+            return Ok(jogosPorCategoria);
+        }
+
     }
 }

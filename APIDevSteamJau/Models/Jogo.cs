@@ -9,5 +9,6 @@
         public string? Banner { get; set; }
         public string Descricao { get; set; }
         public decimal? PrecoOriginal { get; set; }
+        public bool? Lancamento { get; set; } = false;
     }
 }
