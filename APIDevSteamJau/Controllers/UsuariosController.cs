@@ -246,6 +246,20 @@ namespace APIDevSteamJau.Controllers
                 return NotFound("Nenhum perfil encontrado para o usuário.");
             return Ok(roles);
         }
+
+        // [HttpGet] Busca o Usuario por Id
+        [HttpGet("GetUserById")]
+        public async Task<IActionResult> GetUserById(string userId)
+        {
+            // Buscando o usuario no banco de dados
+            var user = await _userManager.FindByIdAsync(userId);
+            // Se o usuario não existir
+            if (user == null)
+                // retorna codigo 404
+                return NotFound("Usuário não encontrado.");
+            // Se encontrar, retorna codigo 200 + o objeto usuario
+            return Ok(user);
+        }
     }
 
 }

@@ -37,7 +37,7 @@ namespace APIDevSteamJau.Controllers
 
             if (jogoMidia == null)
             {
-                return NotFound();
+                return Ok();
             }
 
             return jogoMidia;
