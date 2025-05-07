@@ -231,6 +231,21 @@ namespace APIDevSteamJau.Controllers
 
             return BadRequest(result.Errors);
         }
+
+        // [HttpGet] Buscar Role do usuario
+        [HttpGet("GetUserRole")]
+        public async Task<IActionResult> GetUserRole(string userId)
+        {
+            // Verifica se o usuário existe
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+                return NotFound("Usuário não encontrado.");
+            // Busca as roles do usuário
+            var roles = await _userManager.GetRolesAsync(user);
+            if (roles == null || roles.Count == 0)
+                return NotFound("Nenhum perfil encontrado para o usuário.");
+            return Ok(roles);
+        }
     }
 
 }
