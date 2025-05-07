@@ -140,5 +140,31 @@ namespace APIDevSteamJau.Controllers
         {
             return _context.ItensCarrinhos.Any(e => e.ItemCarrinhoId == id);
         }
+
+        // [HttpGET] : Buscar os itens mais vendidos
+        [HttpGet("ListarItensMaisVendidos")]
+        public async Task<ActionResult<IEnumerable<object>>> GetTopSellingItems([FromQuery] int top)
+        {
+            if (top <= 0)
+                return BadRequest("O parâmetro 'top' deve ser maior que zero.");
+
+            // Busca os itens de carrinhos finalizados
+            var topSellingItems = await _context.ItensCarrinhos
+                .Include(ic => ic.Carrinho) // Inclui os dados do carrinho
+                .Include(ic => ic.Jogo) // Inclui os dados do jogo
+                .Where(ic => ic.Carrinho != null && ic.Carrinho.Finalizado == true) // Verifica se o carrinho está finalizado
+                .GroupBy(ic => new { ic.JogoId, ic.Jogo.Titulo }) // Agrupa por JogoId e Título do jogo
+                .Select(group => new
+                {
+                    JogoId = group.Key.JogoId,
+                    Titulo = group.Key.Titulo,
+                    QuantidadeVendida = group.Sum(ic => ic.Quantidade) // Soma a quantidade vendida
+                })
+                .OrderByDescending(item => item.QuantidadeVendida) // Ordena pela quantidade vendida em ordem decrescente
+                .Take(top) // Limita ao número de itens mais vendidos informado no parâmetro
+                .ToListAsync();
+
+            return Ok(topSellingItems);
+        }
     }
 }
