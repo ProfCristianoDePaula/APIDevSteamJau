@@ -167,5 +167,28 @@ namespace APIDevSteamJau.Controllers
 
             return Ok();
         }
+
+        // [HttpGet] Verificar se existe carrinho em aberto para o id do usaurio recebido
+        [HttpGet("VerificaCarrinhoAberto/{usuarioId}")]
+        public async Task<ActionResult<Carrinho>> VerificaCarrinhoAberto(Guid usuarioId)
+        {
+            var carrinho = await _context.Carrinhos
+                .Where(c => c.UsuarioId == usuarioId && c.Finalizado == false)
+                .FirstOrDefaultAsync();
+            if (carrinho == null)
+            {
+                // Se não existe carrinho em aberto, cria um novo carrinho e retornar o novo carrinho
+                carrinho = new Carrinho
+                {
+                    UsuarioId = usuarioId,
+                    DataCriacao = DateTime.Now,
+                    Finalizado = false,
+                    ValorTotal = 0
+                };
+
+            }
+            return carrinho;
+        }
+
     }
 }

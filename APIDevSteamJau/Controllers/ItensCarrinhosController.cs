@@ -166,5 +166,77 @@ namespace APIDevSteamJau.Controllers
 
             return Ok(topSellingItems);
         }
+
+        // Aumentar a quantidade de um jogo, recebendo o id do jogo e verificar se ele existe no carrinho
+        [HttpPut("AumentarQuantidade/{id}")]
+        public async Task<ActionResult<ItemCarrinho>> AumentarQuantidade(Guid id)
+        {
+            var itemCarrinho = await _context.ItensCarrinhos.FindAsync(id);
+            if (itemCarrinho == null)
+            {
+                return NotFound("Item não encontrado.");
+            }
+            // Verifica se o jogo existe
+            var jogo = _context.Jogos.Find(itemCarrinho.JogoId);
+            if (jogo == null)
+            {
+                return NotFound("Jogo não encontrado.");
+            }
+            // Aumenta a quantidade
+            itemCarrinho.Quantidade++;
+            itemCarrinho.ValorTotal = itemCarrinho.Quantidade * jogo.Preco;
+
+            // Alterar o valor total do carrinho
+            var carrinho = await _context.Carrinhos.FindAsync(itemCarrinho.CarrinhoId);
+            if (carrinho == null)
+            {
+                return NotFound("Carrinho não encontrado.");
+            }
+            carrinho.ValorTotal += jogo.Preco;
+            _context.Entry(carrinho).State = EntityState.Modified;
+
+            _context.SaveChanges();
+            return Ok(itemCarrinho);
+        }
+
+        // Diminuir a quantidade de um jogo, recebendo o id do jogo e verificar se ele existe no carrinho
+        [HttpPut("DiminuirQuantidade/{id}")]
+        public async Task<ActionResult<ItemCarrinho>> DiminuirQuantidade(Guid id)
+        {
+            var itemCarrinho = await _context.ItensCarrinhos.FindAsync(id);
+            if (itemCarrinho == null)
+            {
+                return NotFound("Item não encontrado.");
+            }
+            // Verifica se o jogo existe
+            var jogo = await _context.Jogos.FindAsync(itemCarrinho.JogoId);
+            if (jogo == null)
+            {
+                return NotFound("Jogo não encontrado.");
+            }
+            // Diminui a quantidade
+            if (itemCarrinho.Quantidade > 1)
+            {
+                itemCarrinho.Quantidade--;
+                itemCarrinho.ValorTotal = itemCarrinho.Quantidade * jogo.Preco;
+
+                // Alterar o valor total do carrinho
+                var carrinho = await _context.Carrinhos.FindAsync(itemCarrinho.CarrinhoId);
+                if (carrinho == null)
+                {
+                    return NotFound("Carrinho não encontrado.");
+                }
+                carrinho.ValorTotal -= jogo.Preco;
+                _context.Entry(carrinho).State = EntityState.Modified;
+
+                await _context.SaveChangesAsync();
+                return Ok(itemCarrinho);
+            }
+            else
+            {
+                return BadRequest("A quantidade não pode ser menor que 1.");
+            }
+        }
+
     }
 }
